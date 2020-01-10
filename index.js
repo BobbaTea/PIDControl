@@ -108,7 +108,7 @@ class PID {
         this.netError = this.pError + this.iError + this.dError
 
         console.log("Target: " + this.target + " | Current: " + this.current.toFixed(3) + "\tP: " + this.pError.toFixed(3) + " I: " + this.iError.toFixed(3) + " D: " + this.dError.toFixed(3) + " Net: " + this.netError.toFixed(3))
-        this.past = this.current
+        // this.past = this.current
         return this.netError
     }
 
@@ -122,36 +122,37 @@ class PID {
     }
 
     calcIError() {
-        this.integrator += (this.target - this.current)
-        if(this.current>=this.target && this.past<=this.target){
+        this.integrator += (this.current - this.target)
+        if (this.current >= this.target && this.past <= this.target) {
             this.integrator = 0
-        }else if (this.current<=this.target && this.past>=this.target){
+        } else if (this.current < this.target && this.past > this.target) {
             this.integrator = 0
         }
-        this.iError = this.iGain * this.integrator
+        this.iError = -this.iGain * this.integrator
     }
 
     calcDError() {
-        this.dError = (this.current - this.past) * this.dGain
+        this.dError = -(this.current - this.past) * this.dGain
     }
 
 }
-var main = new Arrow(200, 400)
-var controllerx = new PID(0.001, 0.001, 0.01)
+var main = new Arrow(200, 300)
+var controllerx = new PID(0.006, 0.0001, 0.16)
 function init() {
     controllerx.target = 300
-
 }
 
 function animate() {
-    setTimeout(function () {
-        requestAnimationFrame(animate)
-        c.clearRect(0, 0, canvas.width, canvas.height)
-        controllerx.currentVal = main.x
-        main.xvel += controllerx.run()
-        main.update()
+    requestAnimationFrame(animate)
+    c.clearRect(0, 0, canvas.width, canvas.height)
+    controllerx.currentVal = main.x
+    main.xvel += controllerx.run()
+    main.update()
+    c.beginPath();
+    c.moveTo(controllerx.target, -5);
+    c.lineTo(controllerx.target, canvas.height + 5);
+    c.stroke();
 
-    }, 1);
 
     // objects.forEach(object => {
     //  object.update()
