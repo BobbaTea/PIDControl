@@ -20,6 +20,8 @@ addEventListener('mousemove', (event) => {
     mouse.x = event.clientX
     mouse.y = event.clientY
     controllerx.target = mouse.x
+    controllery.target = mouse.y
+
 })
 
 addEventListener('resize', () => {
@@ -29,7 +31,7 @@ addEventListener('resize', () => {
 })
 
 class Arrow {
-    constructor(x, y, mass) {
+    constructor(x, y) {
         this.x = x
         this.y = y
         this.xvel = 0
@@ -138,8 +140,12 @@ class PID {
 }
 var main = new Arrow(200, 300)
 var controllerx = new PID(0.006, 0.0001, 0.16)
+var controllery = new PID(0.006, 0.0001, 0.16)
+
 function init() {
     controllerx.target = 300
+    controllery.target = 300
+
 }
 
 function animate() {
@@ -152,6 +158,15 @@ function animate() {
     c.moveTo(controllerx.target, -5);
     c.lineTo(controllerx.target, canvas.height + 5);
     c.stroke();
+    c.closePath()
+    controllery.currentVal = main.y
+    main.yvel += controllery.run()
+    main.update()
+    c.beginPath();
+    c.moveTo(-5, controllery.target);
+    c.lineTo(canvas.width + 5, controllery.target);
+    c.stroke();
+    c.closePath()
 
 
     // objects.forEach(object => {
